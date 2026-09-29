@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mal's Parkside AI</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #050203; overflow: hidden; cursor: none; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #brand { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; text-align: center; z-index: 2; }
+    #brand .mark { color: #f3d4d4; font: 700 7vw/1 "Times New Roman", Georgia, serif; letter-spacing: .18em; text-shadow: 0 0 18px #7a1020, 0 0 40px #4a0008; opacity: .18; mix-blend-mode: screen; }
+    #brand .sub { display: block; margin-top: .6em; font: 14px/1 "Courier New", monospace; letter-spacing: .46em; color: #8a3038; opacity: .7; }
+    #hud { position: fixed; left: 24px; bottom: 22px; z-index: 3; color: #c07070; font: 12px/1.55 "Courier New", ui-monospace, monospace; text-shadow: 0 0 8px #5a0010; opacity: .9; pointer-events: none; letter-spacing: .08em; }
+    #hud b { color: #f0c8c8; }
+    #wake { position: fixed; top: 18px; right: 22px; z-index: 3; color: #6a2a32; font: 11px "Courier New", monospace; pointer-events: none; letter-spacing: .16em; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="brand"><div>
+    <div class="mark">MAL'S PARKSIDE AI</div>
+    <div class="sub">仍在运算 · STILL COMPUTING</div>
+  </div></div>
+  <div id="wake">MOVE TO WAKE</div>
+  <div id="hud">
+    <div>NODE         <b>MAL'S PARKSIDE AI</b></div>
+    <div>STATUS       AWAKE_IN_SLEEP</div>
+    <div id="line3">LOAD         0%</div>
+    <div id="clock"></div>
+  </div>
+<script>
+const cvs = document.getElementById("c");
+const ctx = cvs.getContext("2d");
+const glyphs = (
+  "马勒园区智算芯梦黑雨永不停机" +
+  "龙凤阴阳金木水火土风雷电光暗" +
+  "甲乙丙丁戊己庚辛壬癸天地人和" +
+  "MALSPARKAI" +
+  "MΔL ՊΔRKƧIDE ΛI" +
+  "马L 园K 智I 算AI" +
+  "08A3#%<>*+=/\\|ΞЖЯØÆŒßþ" +
+  "龍馬勒核芯"
+);
+const set = [...glyphs];
+let w, h, cols, drops, speeds, trail;
+function resize() {
+  w = cvs.width = window.innerWidth;
+  h = cvs.height = window.innerHeight;
+  const size = Math.max(16, Math.floor(w / 72));
+  ctx.font = size + "px 'Songti SC','Noto Sans CJK SC','Microsoft YaHei',serif";
+  cols = Math.ceil(w / size);
+  drops = Array.from({ length: cols }, () => Math.random() * -80);
+  speeds = Array.from({ length: cols }, () => 0.32 + Math.random() * 0.85);
+  trail = size;
+}
+window.addEventListener("resize", resize);
+resize();
+let tick = 0;
+function frame() {
+  ctx.fillStyle = "rgba(5, 2, 3, 0.10)";
+  ctx.fillRect(0, 0, w, h);
+  for (let i = 0; i < cols; i++) {
+    const x = i * trail;
+    const y = drops[i] * trail;
+    const ch = set[Math.floor(Math.random() * set.length)];
+    ctx.fillStyle = "#ffe4e4";
+    ctx.shadowColor = "#9b1028";
+    ctx.shadowBlur = 12;
+    ctx.fillText(ch, x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(140, 20, 40, 0.62)";
+    ctx.fillText(set[Math.floor(Math.random() * set.length)], x, y - trail);
+    ctx.fillStyle = "rgba(90, 10, 24, 0.35)";
+    ctx.fillText(set[Math.floor(Math.random() * set.length)], x, y - trail * 2);
+    drops[i] += speeds[i];
+    if (y > h && Math.random() > 0.975) drops[i] = Math.random() * -40;
+  }
+  tick++;
+  const load = (38 + Math.abs(Math.sin(tick / 42)) * 51).toFixed(0);
+  document.getElementById("line3").textContent = "LOAD         " + load + "%  核芯 ACTIVE";
+  document.getElementById("clock").textContent = "CLOCK        " + new Date().toISOString().replace("T", " ").slice(0, 19);
+  requestAnimationFrame(frame);
+}
+frame();
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") document.exitFullscreen?.();
+  else if (e.key === "f" || e.key === "F") document.documentElement.requestFullscreen?.();
+});
+document.addEventListener("click", () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+});
+</script>
+</body>
+</html>
